@@ -1,82 +1,82 @@
 class Book {
-    constructor(data) {
-        const {id, title, author, available} = data
-        this.id = id;
-        this.title = title
-        this.author = author
-        this.available = available
- }
-}
-
-class User {
-    constructor ({id, name, borrowedBooks}) {
-        this.id = id;
-        this.name = name;
-        this.borrowedBooks = borrowedBooks;
+    constructor(id, title, author, available) {
+      this.id = id;
+      this.title = title;
+      this.author = author;
+      this.available = available;
     }
-
-    addBorrowedBook(bookId) {
-        this.borrowedBooks.push(bookId)
+  }
+  
+  class User {
+    constructor(id, name) {
+      this.id = id;
+      this.name = name;
+      this.borrowedBooks = [];
     }
-
-    returnBook(bookId) {
-        this.borrowedBooks = this.borrowedBooks.filter(borrowedBook => borrowedBook !== bookId)
-        return "Libro devuelto"
+  
+    borrowBook(book) {
+      if (book.available) {
+        book.available = false;
+        this.borrowedBooks.push(book.id);
+        console.log(`${this.name} ha prestado "${book.title}".`);
+      } else {
+        console.log(`El libro "${book.title}" no está disponible.`);
+      }
     }
-}
-
-class Library {
-    constructor (books, users) {
-        this.books = books;
-        this.users = users;
+  
+    returnBook(book) {
+      const index = this.borrowedBooks.indexOf(book.id);
+      if (index > -1) {
+        book.available = true;
+        this.borrowedBooks.splice(index, 1);
+        console.log(`${this.name} ha devuelto "${book.title}".`);
+      } else {
+        console.log(`${this.name} no ha prestado el libro "${book.title}".`);
+      }
     }
-
-    findBooks () {
-        return this.books
+  }
+  
+  class Library {
+    constructor(books, users) {
+      this.books = books;
+      this.users = users;
     }
-
-    findBook (title) {
-        const book = this.books.find(book => book.title.toLowerCase() === title)
-        if(!book) {
-            return "Libro no encontrado"
-        }
-
-        return book
+  
+    findBook(title) {
+      const book = this.books.find(b => b.title.toLowerCase() === title.toLowerCase());
+      return book ? book : null;
     }
-
-    lendBook(bookTitle, userId) {
-        const book = this.findBook(bookTitle)
-        const user = this.users.find (user => user.id === userId)
-
-        if(!book || user) {
-            return "Libro o usuario no encontrado"
-        }
-
-        if(user.borrowedBooks.include(book.id)) {
-            return "El libro ya esta prestado"
-        }
-
-        if(!book.available) {
-            return "El libro no esta disponible"
-        }
-
-        user.addBorrowedBook (book.id)
-        book.available = false
+  
+    findUser(name) {
+      const user = this.users.find(u => u.name.toLowerCase() === name.toLowerCase());
+      return user ? user : null;
     }
-}
-
-const initialBooks = [
-    new Book ({ id: 1, title: "1984", author: "George Orwell", available: true }),
-    new Book ({ id: 2, title: "To Kill a Mockingbird", author: "Harper Lee", available: true }),
-    new Book ({ id: 3, title: "Pride and Prejudice", author: "Jane Austen", available: false })
+  }
+  
+  // Datos iniciales con nombres de libros cambiados
+  const initialBooks = [
+    new Book(1, "El Hobbit", "J.R.R. Tolkien", true),
+    new Book(2, "Cien años de soledad", "Gabriel García Márquez", true),
+    new Book(3, "La sombra del viento", "Carlos Ruiz Zafón", false)
   ];
   
   const initialUsers = [
-    new User ({ id: 1, name: "Alice Johnson", borrowedBooks: [] }),
-    new User ({ id: 2, name: "Bob Smith", borrowedBooks: [3] })
+    new User(1, "Alice Johnson"),
+    new User(2, "Bob Smith")
   ];
-
-  const library = new library(initialBooks, initialUsers)
-
-  console.log(library.lendBook("1984", 1))
-  console.log(initialUsers)
+  
+  // Crear la biblioteca
+  const library = new Library(initialBooks, initialUsers);
+  
+  // Ejemplo de uso
+  const bookToBorrow = library.findBook("El Hobbit");
+  const userAlice = library.findUser("Alice Johnson");
+  
+  if (bookToBorrow && userAlice) {
+    userAlice.borrowBook(bookToBorrow); // Alice borra "El Hobbit"
+  }
+  
+  const bookToReturn = library.findBook("El Hobbit");
+  if (bookToReturn) {
+    userAlice.returnBook(bookToReturn); // Alice devuelve "El Hobbit"
+  }
