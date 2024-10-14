@@ -61,8 +61,8 @@ class Book {
   ];
   
   const initialUsers = [
-    new User(1, "Alice Johnson"),
-    new User(2, "Bob Smith")
+    new User(1, "Carla López"),
+    new User(2, "David Martínez")
   ];
   
   // Crear la biblioteca
